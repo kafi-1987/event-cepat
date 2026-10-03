@@ -1,0 +1,33 @@
+// ===== Komunikasi ke Google Apps Script (fetch). Tanpa GAS_URL => data demo =====
+const E=[
+{id:'1',nama:'Bimbingan Teknis Implementasi SPBE & Keamanan Informasi Wilayah II',kategori:'Bimtek',mode:'Hybrid',tempat:'Samarinda & Zoom',tanggal:'14 - 16 Nov 2025 · 08:30',kuota:100,terisi:76,status:'Buka',url_gambar:'',deskripsi:'Bimbingan teknis intensif tiga hari untuk membekali aparatur daerah dengan kerangka kerja standar arsitektur nasional, audit kepatuhan ISO/IEC 27001, serta protokol tanggap insiden siber.',narasumber:'Dr. Budi Santoso, M.Kom — Pusdatin\nIr. Sari Wulandari — BSSN RI',daftar_buka:'01 Nov 2025 08:00',daftar_tutup:'12 Nov 2025 23:59',presensi_buka:'14 Nov 2025 08:00',presensi_tutup:'14 Nov 2025 10:00'},
+{id:'2',nama:'Sosialisasi Regulasi Pengelolaan Keuangan Daerah & E-Katalog',kategori:'Sosialisasi',mode:'Online',tempat:'Google Meet',tanggal:'20 Nov 2025 · 09:00',kuota:120,terisi:88,status:'Akan',url_gambar:'',deskripsi:'Sosialisasi kebijakan terbaru pengelolaan keuangan daerah.',daftar_buka:'05 Nov 2025 08:00',daftar_tutup:'18 Nov 2025 23:59',presensi_buka:'20 Nov 2025 08:30',presensi_tutup:'20 Nov 2025 10:30'},
+{id:'3',nama:'Workshop Penyusunan Arsitektur Sistem Informasi Pemerintah Daerah',kategori:'Workshop',mode:'Offline',tempat:'Balikpapan - Hotel Grand Senyiur',tanggal:'28 Nov 2025 · 08:00',kuota:100,terisi:100,status:'Penuh',url_gambar:'',deskripsi:'Workshop teknis penyusunan arsitektur SI.',daftar_buka:'01 Nov 2025 08:00',daftar_tutup:'25 Nov 2025 23:59',presensi_buka:'28 Nov 2025 08:00',presensi_tutup:'28 Nov 2025 10:00'},
+{id:'4',nama:'Sosialisasi Standar Akreditasi Institusi & Penjaminan Mutu',kategori:'Sosialisasi',mode:'Hybrid',tempat:'Auditorium Samarinda',tanggal:'15 Okt 2025 · 09:00',kuota:120,terisi:120,status:'Selesai',url_gambar:'',deskripsi:'Kegiatan telah selesai.',daftar_buka:'',daftar_tutup:'',presensi_buka:'',presensi_tutup:''}];
+const ADM={stats:{kegiatan:24,peserta:1248,hadir:88.5,sertifikat:890,skor:4.86},perKegiatan:E.map(e=>({nama:e.nama,kuota:e.kuota,terisi:e.terisi})),
+perKab:[['Kota Samarinda',349],['Kota Balikpapan',274],['Kab. Kutai Kartanegara',200],['Kota Bontang',150],['Kab. Kutai Timur',100],['Lainnya',175]].map(([nama,jumlah])=>({nama,jumlah})),
+kegiatan:E,peserta:[{nama_lengkap:'Dr. Ir. Rahmat Hidayat, M.Kom.',email:'rahmat.hidayat@kaltimprov.go.id',asal_instansi:'Dinas Kominfo',kabupaten_kota:'Kota Samarinda',status_pendaftaran:'Terdaftar',id:'p1',id_kegiatan:'1',no_hp:'0812',hadir:true}],sertifikat:[{id:'s1',kode:'KOD-894-SPBE-2025',nama:'Dr. Ir. Rahmat Hidayat, M.Kom.',nomor:'890/BMTK-SPBE/XI/2025',status:'Terbit',tanggal:'16 Nov 2025 14:22',kirim:'Y',pdf:true,id_kegiatan:'1'}],evaluasi:{'1':{responden:1,avg:4.9,komentar:['Materi sangat bermanfaat.']}},config:{IZINKAN_PEMBATALAN:'Y'}};
+function demo(a,p){const D={listEvents:E,getEvent:E.find(e=>e.id==p.id),getQuestions:[{id_pertanyaan:'q1',urutan:1,teks_pertanyaan:'Kesesuaian materi dengan tugas Anda?',tipe:'Skala 1-5',opsi:'',wajib:true},{id_pertanyaan:'q2',urutan:2,teks_pertanyaan:'Kejelasan penyampaian narasumber?',tipe:'Rating Bintang',opsi:'',wajib:true},{id_pertanyaan:'q3',urutan:3,teks_pertanyaan:'Kualitas sarana & platform?',tipe:'Pilihan',opsi:'Sangat Baik|Baik|Cukup|Kurang',wajib:true},{id_pertanyaan:'q4',urutan:4,teks_pertanyaan:'Kritik dan saran?',tipe:'Teks',opsi:'',wajib:false}],verify:{status:/^KOD-/i.test(p.kode||'')?(/REVOKED/i.test(p.kode)?'Dicabut':'Valid'):'Tidak ditemukan',nomor:'890/BMTK-SPBE/XI/2025',nama:'Dr. Ir. Rahmat Hidayat, M.Kom.',kegiatan:E[0].nama,tanggal:'16 Nov 2025'},certLookup:{nama:'Dr. Ir. Rahmat Hidayat, M.Kom.',kegiatan:E[0].nama,nomor:'890/BMTK-SPBE/XI/2025',kode:'KOD-894-SPBE-2025',url_pdf:''},adminData:ADM};return Promise.resolve({success:true,data:D[a]})}
+// ===== STATE APLIKASI (gas-instant-ux): data publik dimuat SEKALI, semua halaman dibaca dari memori =====
+const APP={ev:null,qs:{},off:0,t:0,p:null},PUBR=/^(#\/?|#\/kegiatan(\/.*)?|#\/detail\/[^/]+)$/;
+try{const c=JSON.parse(localStorage.sv_boot||'null');if(c&&c.events){APP.ev=c.events;APP.qs=c.questions||{};APP.off=c.off||0}}catch(e){}
+const saveBoot=()=>{try{localStorage.sv_boot=JSON.stringify({events:APP.ev,questions:APP.qs,off:APP.off})}catch(e){}};
+function preImg(){(window.requestIdleCallback||setTimeout)(()=>(APP.ev||[]).slice(0,12).forEach(e=>{if(e.url_gambar&&typeof imgU==='function')new Image().src=imgU(e.url_gambar,640)}))}
+function bootRefresh(force){if(!GAS_URL)return Promise.resolve();if(APP.p&&!force)return APP.p;
+const f=(!force&&window.__bp)||fetch(GAS_URL+'?action=boot').then(r=>r.json());window.__bp=null;
+return APP.p=f.then(r=>{if(!r||!r.success)return;const before=JSON.stringify([APP.ev,APP.qs]),keep={};Object.keys(APP.qs).forEach(k=>{if(!r.data.events.some(e=>e.id==k))keep[k]=APP.qs[k]});
+APP.ev=r.data.events;APP.qs={...keep,...(r.data.questions||{})};if(r.ts)APP.off=r.ts-Date.now();APP.t=Date.now();saveBoot();preImg();
+if(JSON.stringify([APP.ev,APP.qs])!==before&&PUBR.test(location.hash)&&!document.querySelector('.modal'))route()}).catch(()=>{}).finally(()=>{APP.p=null})}
+addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-APP.t>20000)bootRefresh()});
+async function get(action,params={}){if(!GAS_URL)return demo(action,params);
+if(action==='listEvents'||action==='getEvent'||action==='getQuestions'){if(!APP.ev)await bootRefresh();
+ if(APP.ev){const id=params.id;if(action==='listEvents')return{success:true,data:APP.ev};
+  if(action==='getEvent'){const e=APP.ev.find(x=>x.id==id);if(e)return{success:true,data:{...e,t_now:Date.now()+APP.off}}}
+  if(action==='getQuestions'&&APP.qs[id])return{success:true,data:APP.qs[id]}}}
+const r=await fetch(GAS_URL+'?'+new URLSearchParams({action,...params})).then(r=>r.json());if(action==='getQuestions'&&r.success)APP.qs[params.id]=r.data;return r}
+async function post0(action,data){if(!GAS_URL)return{success:true,data:{token:'demo',nama:'Admin Demo'},message:'Berhasil (mode demo)'};
+const r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,data})});return r.json()}
+
+async function post(action,data){const r=await post0(action,data);if(r&&r.success&&GAS_URL){
+if(action==='register'){const e=(APP.ev||[]).find(x=>x.id==data.id_kegiatan);if(e&&!(r.data&&r.data.waiting)){e.terisi++;if(e.terisi>=e.kuota&&e.status==='Buka')e.status='Penuh';saveBoot()}try{Object.keys(localStorage).filter(k=>k.startsWith('dr:')).forEach(k=>localStorage.removeItem(k))}catch(x){}}
+if(action==='aQuestion')APP.qs={};if(!/^(login|cekReg)$/.test(action))bootRefresh(1)}return r}
